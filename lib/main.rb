@@ -44,6 +44,14 @@ game = Game.new()
     game.add_piece(white_queen, [7, i])
     game.add_piece(black_queen, [0, i])
   end
+  # Adding Kings
+  if i == 4
+    white_king = King.new([7,i], 'white', game)
+    black_king = King.new([0,i], 'black', game)
+
+    game.add_piece(white_king, [7, i])
+    game.add_piece(black_king, [0, i])
+  end
 end
 
 game.build_board

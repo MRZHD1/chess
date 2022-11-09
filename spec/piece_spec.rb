@@ -232,4 +232,47 @@ describe Piece do
       ].sort)
     end
   end
+
+  describe King do 
+    it "Has all the correct moves" do
+      game = Game.new()
+      game.add_piece(King.new([7,4], 'white', game), [7,4])
+      game.move('e1','e2')
+      piece = game.find_piece([6,4])
+
+      expect(piece.moves.sort).to eql([
+        [5,5], [5,4], [5,3],
+        [6,5], [6,3],
+        [7,5], [7,4], [7,3]
+      ].sort)
+    end
+
+    it "Gets blocked by friendlies" do
+      game = Game.new()
+      game.add_piece(King.new([7,4], 'white', game), [7,4])
+      game.add_piece(Pawn.new([5,3], 'white', game), [5,3])
+      game.move('e1','e2')
+      piece = game.find_piece([6,4])
+
+      expect(piece.moves.sort).to eql([
+        [5,5], [5,4],
+        [6,5], [6,3],
+        [7,5], [7,4], [7,3]
+      ].sort)
+    end
+
+    it "Doesn't get blocked by enemies" do
+      game = Game.new()
+      game.add_piece(King.new([7,4], 'white', game), [7,4])
+      game.add_piece(Pawn.new([5,3], 'black', game), [5,3])
+      game.move('e1','e2')
+      piece = game.find_piece([6,4])
+
+      expect(piece.moves.sort).to eql([
+        [5,5], [5,4], [5,3],
+        [6,5], [6,3],
+        [7,5], [7,4], [7,3]
+      ].sort)
+    end
+  end
 end

@@ -20,7 +20,7 @@ class Piece
     elsif @@game.find_piece([@row + x, @column + y]).to_s.include?(@rgb)
       return true
     elsif @@game.find_piece([@row + x, @column + y]) != ' '
-      unless self.is_a?(Knight)
+      unless self.is_a?(Knight) || self.is_a?(King)
         @enemy = true
       end
       return false
@@ -254,3 +254,39 @@ class Queen < Piece
   end
 end
 
+class King < Piece
+  def to_s
+    @color == 'black' ? '♚'.blue : '♚'.red
+  end
+
+  def moves
+    valid = []
+
+    unless self.blocked?(1,0)
+      valid += [[@row + 1, @column]]
+    end
+    unless self.blocked?(1,1)
+      valid += [[@row + 1, @column + 1]]
+    end
+    unless self.blocked?(0,1)
+      valid += [[@row, @column + 1]]
+    end
+    unless self.blocked?(-1,0)
+      valid += [[@row - 1, @column]]
+    end
+    unless self.blocked?(0,-1)
+      valid += [[@row, @column-1]]
+    end
+    unless self.blocked?(-1,-1)
+      valid += [[@row - 1, @column - 1]]
+    end
+    unless self.blocked?(1,-1)
+      valid += [[@row + 1, @column - 1]]
+    end
+    unless self.blocked?(-1,1)
+      valid += [[@row - 1, @column + 1]]
+    end
+    
+    return valid
+  end
+end
