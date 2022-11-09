@@ -10,6 +10,7 @@ class Game
     board = ''
     color = 0
     n = 0
+    board += "   0  1  2  3  4  5  6  7 "
     for line in @arr
       board += "\n"
       board += "#{n} "
@@ -18,6 +19,7 @@ class Game
         board += " #{piece}".bg(color) + " ".bg(color)
         color = color == 0 ? 1 : 0 
       end
+      board += " #{n}"
       n += 1
     end
     board += "\n   0  1  2  3  4  5  6  7 "
@@ -63,7 +65,7 @@ class Game
       puts 'Wrong colored piece!'
       return
     end
-    p piece.moves()
+    # p piece.moves()
     if piece.moves().include?([x,y])    
       @arr[x][y] = piece
       @arr[i][j] = ' '

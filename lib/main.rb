@@ -30,8 +30,10 @@ game = Game.new()
   end
 end
 
-loop do
-  game.build_board
-  var = gets.chomp
-  game.move(var[..1], var[2..]) 
-end
+game.build_board
+
+# loop do
+#   game.build_board
+#   var = gets.chomp
+#   game.move(var[..1], var[2..]) 
+# end

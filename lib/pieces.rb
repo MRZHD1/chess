@@ -13,7 +13,7 @@ class Piece
     @row, @column = position
   end
 
-  def blocked(x,y)
+  def blocked?(x,y)
     if @row+x < 0 || @row+x > 7 || @column+y < 0 || @column+y > 7 || @enemy == true
       @enemy = false
       return true
@@ -29,6 +29,19 @@ class Piece
 end
 
 class Pawn < Piece
+  attr_accessor :passant
+  def initialize(position, color, game)
+    super(position,color,game)
+    @passant = true
+  end
+
+  def update(position)
+    super(position)
+    if @row == 2 || @row == 5
+      @passant = false
+    end
+  end
+
   def to_s
     @color == 'black' ? '♟'.blue : '♟'.red
   end
@@ -45,9 +58,23 @@ class Pawn < Piece
           valid += [[@row + 2, @column]]
         end
       end
-      # Diagonal
+      # Diagonal Attack
       if @@game.find_piece([@row + 1, @column + 1]) != ' '
         valid += [[@row + 1, @column + 1]]
+      end
+      if @@game.find_piece([@row + 1, @column - 1]) != ' '
+        valid += [[@row + 1, @column - 1]]
+      end
+      # En Passant
+      if @row == 4
+        piece = @@game.find_piece([@row, @column - 1])
+        if piece != ' ' && piece.color != @color && piece.passant == true
+          valid += [[@row + 1, @column - 1]]
+        end
+        piece = @@game.find_piece([@row, @column + 1])
+        if piece != ' ' && piece.color != @color && piece.passant == true
+          valid += [[@row + 1, @column + 1]]
+        end
       end
     else # If it's white
       # Standard move
@@ -59,9 +86,23 @@ class Pawn < Piece
           valid += [[@row - 2, @column]]
         end
       end
-      # Diagonal
+      # Diagonal Attack
       if @@game.find_piece([@row - 1, @column - 1]) != ' '
         valid += [[@row - 1, @column - 1]]
+      end
+      if @@game.find_piece([@row - 1, @column + 1]) != ' '
+        valid += [[@row - 1, @column + 1]]
+      end
+      # En Passant
+      if @row == 3
+        piece = @@game.find_piece([@row, @column - 1])
+        if piece != ' ' && piece.color != @color && piece.passant == true
+          valid += [[@row - 1, @column - 1]]
+        end
+        piece = @@game.find_piece([@row, @column + 1])
+        if piece != ' ' && piece.color != @color && piece.passant == true
+          valid += [[@row - 1, @column + 1]]
+        end
       end
     end
     return valid
@@ -78,26 +119,26 @@ class Rook < Piece
 
     # Vertical
     i = 1
-    until @row + i > 7 || @@game.find_piece([@row + i, @column]) != ' '
+    until self.blocked?(i,0)
       valid += [[@row + i, @column]]
       i += 1
     end
 
     i = 1
-    until @row - i < -0 || @@game.find_piece([@row - i, @column]) != ' '
+    until self.blocked?(-i,0)
       valid += [[@row - i, @column]]
       i += 1
     end
 
     #Horizontal
     i = 1
-    until @column + i > 7 || @@game.find_piece([@row, @column + i]) != ' '
+    until self.blocked?(0,i)
       valid += [[@row, @column + i]]
       i += 1
     end
 
     i = 1
-    until @column - i < 0 || @@game.find_piece([@row, @column - i]) != ' '
+    until self.blocked?(0,-i)
       valid += [[@row, @column - i]]
       i += 1
     end
@@ -115,25 +156,25 @@ class Bishop < Piece
     valid = []
 
     i = 1
-    until self.blocked(i,i)
+    until self.blocked?(i,i)
       valid += [[@row + i, @column + i]]
       i += 1
     end
 
     i = 1
-    until self.blocked(i,-i)
+    until self.blocked?(i,-i)
       valid += [[@row + i, @column - i]]
       i += 1
     end
 
     i = 1
-    until self.blocked(-i,-i)
+    until self.blocked?(-i,-i)
       valid += [[@row - i, @column - i]]
       i += 1
     end
 
     i = 1
-    until self.blocked(-i,i)
+    until self.blocked?(-i,i)
       valid += [[@row - i, @column + i]]
       i += 1
     end
