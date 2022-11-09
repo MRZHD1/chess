@@ -59,20 +59,22 @@ class Pawn < Piece
         end
       end
       # Diagonal Attack
-      if @@game.find_piece([@row + 1, @column + 1]) != ' '
+      piece = @@game.find_piece([@row + 1, @column + 1])
+      if piece != ' ' && piece.color != @color
         valid += [[@row + 1, @column + 1]]
       end
-      if @@game.find_piece([@row + 1, @column - 1]) != ' '
+      piece = @@game.find_piece([@row + 1, @column - 1])
+      if piece != ' ' && piece.color != @color
         valid += [[@row + 1, @column - 1]]
       end
       # En Passant
       if @row == 4
         piece = @@game.find_piece([@row, @column - 1])
-        if piece != ' ' && piece.color != @color && piece.passant == true
+        if piece != " " && piece.color != @color && piece.passant == true
           valid += [[@row + 1, @column - 1]]
         end
         piece = @@game.find_piece([@row, @column + 1])
-        if piece != ' ' && piece.color != @color && piece.passant == true
+        if piece != " " && piece.color != @color && piece.passant == true
           valid += [[@row + 1, @column + 1]]
         end
       end
@@ -87,10 +89,12 @@ class Pawn < Piece
         end
       end
       # Diagonal Attack
-      if @@game.find_piece([@row - 1, @column - 1]) != ' '
+      piece = @@game.find_piece([@row - 1, @column - 1])
+      if piece != ' ' && piece.color != @color
         valid += [[@row - 1, @column - 1]]
       end
-      if @@game.find_piece([@row - 1, @column + 1]) != ' '
+      piece = @@game.find_piece([@row - 1, @column + 1])
+      if piece != ' ' && piece.color != @color
         valid += [[@row - 1, @column + 1]]
       end
       # En Passant

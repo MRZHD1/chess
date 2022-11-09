@@ -8,10 +8,34 @@ describe Piece do
       expect(piece.moves.sort).to eql([[5,0], [4,0]].sort)
     end
 
-    it "Attacks nearby piece" do
+    it "Gets blocked by friendly piece" do
+      game = Game.new()
+      game.add_piece(Pawn.new([6,0], 'white', game),[6,0])
+      game.add_piece(Pawn.new([5,0], 'white', game),[5,0])
+      piece = game.find_piece([6,0])
+      expect(piece.moves).to eql([])
+    end
+
+    it "Gets blocked by enemy piece" do
+      game = Game.new()
+      game.add_piece(Pawn.new([6,0], 'white', game),[6,0])
+      game.add_piece(Pawn.new([5,0], 'black', game),[5,0])
+      piece = game.find_piece([6,0])
+      expect(piece.moves).to eql([])
+    end
+    
+    it "Doesn't attack friendly piece" do
       game = Game.new()
       game.add_piece(Pawn.new([6,0], 'white', game),[6,0])
       game.add_piece(Pawn.new([5,1], 'white', game),[5,1])
+      piece = game.find_piece([6,0])
+      expect(piece.moves.sort).to eql([[5,0],[4,0]].sort)
+    end
+
+    it "Attacks enemy piece" do
+      game = Game.new()
+      game.add_piece(Pawn.new([6,0], 'white', game),[6,0])
+      game.add_piece(Pawn.new([5,1], 'black', game),[5,1])
       piece = game.find_piece([6,0])
       expect(piece.moves.sort).to eql([[5,0],[4,0],[5,1]].sort)
     end
@@ -77,7 +101,7 @@ describe Piece do
       ].sort)
     end
   end
-  
+
   describe Rook do
     it "Works on straight lines" do
       game = Game.new()
