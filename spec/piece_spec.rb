@@ -142,4 +142,38 @@ describe Piece do
       ].sort)
     end
   end
+  
+  describe Knight do
+    it "Has all correct moves" do
+      game = Game.new()
+      game.add_piece(Knight.new([7,2], 'white', game),[7,2])
+      piece = game.find_piece([7,2])
+
+      expect(piece.moves().sort).to eql([
+        [5,1],[6,0],[6,4],[5,3]
+      ].sort)
+    end
+
+    it "Gets blocked by a friendly" do
+      game = Game.new()
+      game.add_piece(Knight.new([7,2], 'white', game),[7,2])
+      game.add_piece(Pawn.new([5,3], 'white', game), [5,3])
+      piece = game.find_piece([7,2])
+
+      expect(piece.moves().sort).to eql([
+        [5,1],[6,0],[6,4]
+      ].sort)
+    end
+
+    it "Doesn't get blocked by an enemy" do
+      game = Game.new()
+      game.add_piece(Knight.new([7,2], 'white', game),[7,2])
+      game.add_piece(Pawn.new([5,3], 'black', game), [5,3])
+      piece = game.find_piece([7,2])
+
+      expect(piece.moves().sort).to eql([
+        [5,1],[6,0],[6,4],[5,3]
+      ].sort)
+    end
+  end
 end

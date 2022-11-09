@@ -28,6 +28,14 @@ game = Game.new()
     black_bishop = Bishop.new([0, i], 'black', game)
     game.add_piece(black_bishop, [0,i])
   end
+  # Adding Knights
+  if i == 2 || i == 5
+    white_knight = Knight.new([7, i], 'white', game)
+    black_knight = Knight.new([0, i], 'black', game)
+
+    game.add_piece(white_knight, [7, i])
+    game.add_piece(black_knight, [0, i])
+  end
 end
 
 game.build_board

@@ -20,7 +20,9 @@ class Piece
     elsif @@game.find_piece([@row + x, @column + y]).to_s.include?(@rgb)
       return true
     elsif @@game.find_piece([@row + x, @column + y]) != ' '
-      @enemy = true
+      unless self.is_a?(Knight)
+        @enemy = true
+      end
       return false
     else
       return false
@@ -120,7 +122,7 @@ class Rook < Piece
 
   def moves
     valid = []
-
+   # Upper Right
     # Vertical
     i = 1
     until self.blocked?(i,0)
@@ -181,6 +183,50 @@ class Bishop < Piece
     until self.blocked?(-i,i)
       valid += [[@row - i, @column + i]]
       i += 1
+    end
+    return valid
+  end
+end
+
+class Knight < Piece
+  def to_s
+    @color == 'black' ? '♞'.blue : '♞'.red
+  end
+
+  def moves 
+    valid = []
+    # Close L
+    unless self.blocked?(-2,-1)
+      valid += [[@row - 2, @column - 1]]
+    end
+
+    unless self.blocked?(-2,1)
+      valid += [[@row - 2, @column + 1]]
+    end
+
+    unless self.blocked?(2,1)
+      valid += [[@row + 2, @column + 1]]
+    end
+
+    unless self.blocked?(2,-1)
+      valid += [[@row + 2, @column - 1]]
+    end
+
+    # Far L
+    unless self.blocked?(-1,-2)
+      valid += [[@row - 1, @column - 2]]
+    end
+
+    unless self.blocked?(-1,2)
+      valid += [[@row - 1, @column + 2]]
+    end
+
+    unless self.blocked?(1,2)
+      valid += [[@row + 1, @column + 2]]
+    end
+
+    unless self.blocked?(1,-2)
+      valid += [[@row + 1, @column - 2]]
     end
     return valid
   end
