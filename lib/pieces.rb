@@ -4,21 +4,33 @@ class Piece
   def initialize(position, color, game)
     @row, @column = position
     @color = color
+    @rgb = @color == 'black' ? "0;0;153" : "204;0;0"
+    @enemy = false
     @@game = game
   end
   
   def update(position)
     @row, @column = position
   end
+
+  def blocked(x,y)
+    if @row+x < 0 || @row+x > 7 || @column+y < 0 || @column+y > 7 || @enemy == true
+      @enemy = false
+      return true
+    elsif @@game.find_piece([@row + x, @column + y]).to_s.include?(@rgb)
+      return true
+    elsif @@game.find_piece([@row + x, @column + y]) != ' '
+      @enemy = true
+      return false
+    else
+      return false
+    end
+  end
 end
 
 class Pawn < Piece
   def to_s
-    if @color == 'black'
-      return '♟'.blue
-    else
-      return '♟'.red
-    end
+    @color == 'black' ? '♟'.blue : '♟'.red
   end
 
   def moves
@@ -33,7 +45,7 @@ class Pawn < Piece
           valid += [[@row + 2, @column]]
         end
       end
-      # En Passant
+      # Diagonal
       if @@game.find_piece([@row + 1, @column + 1]) != ' '
         valid += [[@row + 1, @column + 1]]
       end
@@ -47,7 +59,7 @@ class Pawn < Piece
           valid += [[@row - 2, @column]]
         end
       end
-      # En Passant
+      # Diagonal
       if @@game.find_piece([@row - 1, @column - 1]) != ' '
         valid += [[@row - 1, @column - 1]]
       end
@@ -58,11 +70,7 @@ end
 
 class Rook < Piece
   def to_s
-    if @color == 'black'
-      return '♜'.blue
-    else
-      return '♜'.red
-    end
+    @color == 'black' ? '♜'.blue : '♜'.red
   end
 
   def moves
@@ -74,6 +82,7 @@ class Rook < Piece
       valid += [[@row + i, @column]]
       i += 1
     end
+
     i = 1
     until @row - i < -0 || @@game.find_piece([@row - i, @column]) != ' '
       valid += [[@row - i, @column]]
@@ -86,9 +95,46 @@ class Rook < Piece
       valid += [[@row, @column + i]]
       i += 1
     end
+
     i = 1
     until @column - i < 0 || @@game.find_piece([@row, @column - i]) != ' '
       valid += [[@row, @column - i]]
+      i += 1
+    end
+
+    return valid
+  end
+end
+
+class Bishop < Piece
+  def to_s
+    @color == 'black' ? '♝'.blue : '♝'.red
+  end
+
+  def moves
+    valid = []
+
+    i = 1
+    until self.blocked(i,i)
+      valid += [[@row + i, @column + i]]
+      i += 1
+    end
+
+    i = 1
+    until self.blocked(i,-i)
+      valid += [[@row + i, @column - i]]
+      i += 1
+    end
+
+    i = 1
+    until self.blocked(-i,-i)
+      valid += [[@row - i, @column - i]]
+      i += 1
+    end
+
+    i = 1
+    until self.blocked(-i,i)
+      valid += [[@row - i, @column + i]]
       i += 1
     end
     return valid

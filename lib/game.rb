@@ -2,20 +2,25 @@ class Game
   def initialize
     @arr = []
     @color = 'white'
+    @rgb = @color == 'white' ? "0;0;153" : "204;0;0"
     8.times {@arr += [Array.new(8, ' ')]}
   end
 
   def build_board
     board = ''
     color = 0
+    n = 0
     for line in @arr
       board += "\n"
+      board += "#{n} "
       color = color == 0 ? 1 : 0 
       for piece in line
         board += " #{piece}".bg(color) + " ".bg(color)
         color = color == 0 ? 1 : 0 
       end
+      n += 1
     end
+    board += "\n   0  1  2  3  4  5  6  7 "
     puts board
   end
 
@@ -59,7 +64,6 @@ class Game
       return
     end
     p piece.moves()
-    p [x,y]
     if piece.moves().include?([x,y])    
       @arr[x][y] = piece
       @arr[i][j] = ' '
