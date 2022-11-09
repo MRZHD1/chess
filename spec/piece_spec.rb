@@ -53,7 +53,6 @@ describe Piece do
     it "Doesn't always En Passant" do
       game = Game.new()
       game.add_piece(Pawn.new([6,0], 'white', game),[6,0])
-      game.add_piece(Pawn.new([1,0], 'black', game),[1,0])
       game.add_piece(Pawn.new([1,1], 'black', game),[1,1])
       game.move('a2','a4');game.move('b7','b6');game.move('a4','a5');game.move('b6','b5')
       piece = game.find_piece([3,0])
@@ -173,6 +172,63 @@ describe Piece do
 
       expect(piece.moves().sort).to eql([
         [5,1],[6,0],[6,4],[5,3]
+      ].sort)
+    end
+  end
+
+  describe Queen do
+    it "Works on diagonals and straights" do
+      game = Game.new()
+      game.add_piece(Queen.new([4,3], 'black', game), [4,3])
+      piece = game.find_piece([4,3])
+
+      expect(piece.moves().sort).to eql([
+        [3,3],[2,3],[1,3],[0,3], # Up
+        [5,3],[6,3],[7,3], # Down
+        [4,2],[4,1],[4,0], # Left
+        [4,4],[4,5],[4,6],[4,7], # Right
+        [7,0],[6,1],[5,2], # Bottom Left
+        [3,4],[2,5],[1,6],[0,7], # Upper Right
+        [3,2],[2,1],[1,0], # Upper Left
+        [5,4],[6,5],[7,6] #Bottom Right
+      ].sort)
+    end
+
+    it "Works when blocked by friendlies" do 
+      game = Game.new()
+      game.add_piece(Queen.new([4,3], 'black', game), [4,3])
+      game.add_piece(Pawn.new([5,3], 'black', game), [5,3])
+      game.add_piece(Pawn.new([5,2], 'black', game),[5,2])
+      piece = game.find_piece([4,3])
+
+      expect(piece.moves().sort).to eql([
+        [3,3],[2,3],[1,3],[0,3], # Up
+        # Down
+        [4,2],[4,1],[4,0], # Left
+        [4,4],[4,5],[4,6],[4,7], # Right
+        # Bottom Left
+        [3,4],[2,5],[1,6],[0,7], # Upper Right
+        [3,2],[2,1],[1,0], # Upper Left
+        [5,4],[6,5],[7,6] #Bottom Right
+      ].sort)
+    end
+    
+    it "Works when blocked by enemies" do
+      game = Game.new()
+      game.add_piece(Queen.new([4,3], 'black', game), [4,3])
+      game.add_piece(Queen.new([5,3], 'black', game), [5,3])
+      game.add_piece(Pawn.new([5,2], 'white', game),[5,2])
+      piece = game.find_piece([4,3])
+
+      expect(piece.moves().sort).to eql([
+        [3,3],[2,3],[1,3],[0,3], # Up
+        # Down
+        [4,2],[4,1],[4,0], # Left
+        [4,4],[4,5],[4,6],[4,7], # Right
+        [3,4],[2,5],[1,6],[0,7], # Upper Right
+        [3,2],[2,1],[1,0], # Upper Left
+        [5,2], # Bottom Left
+        [5,4],[6,5],[7,6] #Bottom Right
       ].sort)
     end
   end

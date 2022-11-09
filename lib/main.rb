@@ -36,6 +36,14 @@ game = Game.new()
     game.add_piece(white_knight, [7, i])
     game.add_piece(black_knight, [0, i])
   end
+  # Adding Queens
+  if i == 3
+    white_queen = Queen.new([7, i], 'white', game)
+    black_queen = Queen.new([0, i], 'black', game)
+
+    game.add_piece(white_queen, [7, i])
+    game.add_piece(black_queen, [0, i])
+  end
 end
 
 game.build_board

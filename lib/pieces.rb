@@ -48,15 +48,24 @@ class Pawn < Piece
     @color == 'black' ? '♟'.blue : '♟'.red
   end
 
+  def blocked?(x)
+    if @row + x < 0 || @row + x > 7
+      return true
+    elsif @@game.find_piece([@row + x, @column]) != ' '
+      return true
+    else
+      return false
+    end
+  end
   def moves
     valid = []
     if @color == 'black' 
       # Standard move
-      if @row < 8 && @@game.find_piece([@row + 1, @column]) == ' '
+      unless self.blocked?(1)
         valid += [[@row + 1, @column]]
 
         # Starting row 2 blocks forward
-        if @row == 1 && @@game.find_piece([@row + 2, @column]) == ' '
+        if !self.blocked?(2) && @row == 1
           valid += [[@row + 2, @column]]
         end
       end
@@ -82,11 +91,11 @@ class Pawn < Piece
       end
     else # If it's white
       # Standard move
-      if @row > 0 && @@game.find_piece([@row - 1, @column]) == ' '
+      unless self.blocked?(-1)
         valid += [[@row - 1, @column]]
 
         # Starting row 2 blocks forward
-        if @row == 6 && @@game.find_piece([@row - 2, @column]) == ' '
+        if !self.blocked?(-2) && @row == 6
           valid += [[@row - 2, @column]]
         end
       end
@@ -231,3 +240,17 @@ class Knight < Piece
     return valid
   end
 end
+
+class Queen < Piece
+  def to_s
+    @color == 'black' ? '♛'.blue : '♛'.red
+  end
+
+  def moves
+    bishop_moves = (Bishop.new([@row,@column], @color, @@game)).moves
+    rook_moves = (Rook.new([@row,@column], @color, @@game)).moves
+
+    bishop_moves + rook_moves
+  end
+end
+
