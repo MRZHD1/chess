@@ -16,6 +16,7 @@ def load_game()
     num = gets.chomp
     if ('0'..'100').include?(num) && num.to_i < games.length
       game = deserialize(games[num.to_i])
+      puts "Game loaded"
       return game
     end
   end

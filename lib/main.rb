@@ -9,6 +9,10 @@ bmove = ''
 puts "Click Enter to start a new game, or 1 to load a game"
 if gets.chomp == '1'
   game = load_game()
+  puts "If you want to fight stockfish, type 1. Otherwise click Enter for two players"
+  if gets.chomp == '1'
+    bot = true
+  end
 else
   puts "If you want to fight stockfish, type 1. Otherwise click Enter for two players"
   if gets.chomp == '1'
@@ -19,6 +23,15 @@ else
 end
 
 loop do
+  if bot && game.color == 'black'
+    bmove = bot_move(serialize(game))
+    game.move(bmove[..1], bmove[2..])
+    if game.check_mate?
+      game.build_board
+      puts bmove + ", Checkmate!"
+      break
+    end
+  end
   game.build_board
   if bmove.length > 0
     puts "Stockfish has moved #{bmove}"
@@ -36,15 +49,6 @@ loop do
   if game.check_mate?
     game.build_board
     puts "Checkmate!"
-    break
-  end
-  if game.color == 'black'
-    bmove = bot_move(serialize(game))
-    game.move(bmove[..1], bmove[2..])
-  end
-  if game.check_mate?
-    game.build_board
-    puts bmove + ", Checkmate!"
     break
   end
 end
