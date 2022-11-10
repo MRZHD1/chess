@@ -134,9 +134,6 @@ class Game
     if piece.moves.include?([x,y])
       if self.test_check?(piece,x,y,i,j)
         puts 'This move would put you into check!'
-        piece.update([i,j])
-        @arr[i][j] = piece
-        @arr[x][y] = before
         return
       else
         if @arr[x][y] == ' ' && !(piece.is_a?(Pawn))
@@ -187,14 +184,15 @@ class Game
   end
 
   def test_check?(piece,x,y,i,j)
-    piece.update([i,j])
-    before = @arr[x][y]
+    # i,j : from
+    # x,y : to
+    before_piece = @arr[x][y]
     @arr[x][y] = piece
     @arr[i][j] = ' '
     piece.update([x,y])
     value = self.check?.to_s
     
-    @arr[x][y] = before
+    @arr[x][y] = before_piece
     @arr[i][j] = piece
     piece.update([i,j])
     return value == 'true'
@@ -207,8 +205,8 @@ class Game
     for piece in self.pieces
       if piece.color == @color
         for move in piece.moves
-          x,y = piece.row, piece.column
-          i,j = move
+          i,j = piece.row, piece.column
+          x,y = move
           unless self.test_check?(piece,x,y,i,j)
             return false
           end
