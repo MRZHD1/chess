@@ -3,48 +3,48 @@ describe Piece do
   describe Pawn do
     it "Moves up to 2 steps at the start" do
       game = Game.new()
-      game.add_piece(Pawn.new([6,0], 'white', game), [6,0])
+      game.new_piece(Pawn, 'white', [6,0])
       piece = game.find_piece([6,0])
       expect(piece.moves.sort).to eql([[5,0], [4,0]].sort)
     end
 
     it "Gets blocked by friendly piece" do
       game = Game.new()
-      game.add_piece(Pawn.new([6,0], 'white', game),[6,0])
-      game.add_piece(Pawn.new([5,0], 'white', game),[5,0])
+      game.new_piece(Pawn, 'white', [6,0])
+      game.new_piece(Pawn, 'white', [5,0])
       piece = game.find_piece([6,0])
       expect(piece.moves).to eql([])
     end
 
     it "Gets blocked by enemy piece" do
       game = Game.new()
-      game.add_piece(Pawn.new([6,0], 'white', game),[6,0])
-      game.add_piece(Pawn.new([5,0], 'black', game),[5,0])
+      game.new_piece(Pawn, 'white', [6,0])
+      game.new_piece(Pawn, 'black', [5,0])
       piece = game.find_piece([6,0])
       expect(piece.moves).to eql([])
     end
     
     it "Doesn't attack friendly piece" do
       game = Game.new()
-      game.add_piece(Pawn.new([6,0], 'white', game),[6,0])
-      game.add_piece(Pawn.new([5,1], 'white', game),[5,1])
+      game.new_piece(Pawn, 'white', [6,0])
+      game.new_piece(Pawn, 'white', [5,1])
       piece = game.find_piece([6,0])
       expect(piece.moves.sort).to eql([[5,0],[4,0]].sort)
     end
 
     it "Attacks enemy piece" do
       game = Game.new()
-      game.add_piece(Pawn.new([6,0], 'white', game),[6,0])
-      game.add_piece(Pawn.new([5,1], 'black', game),[5,1])
+      game.new_piece(Pawn, 'white', [6,0])
+      game.new_piece(Pawn, 'black', [5,1])
       piece = game.find_piece([6,0])
       expect(piece.moves.sort).to eql([[5,0],[4,0],[5,1]].sort)
     end
 
     it "En Passants" do
       game = Game.new()
-      game.add_piece(Pawn.new([6,0], 'white', game),[6,0])
-      game.add_piece(Pawn.new([1,0], 'black', game),[1,0])
-      game.add_piece(Pawn.new([1,1], 'black', game),[1,1])
+      game.new_piece(Pawn, 'white', [6,0])
+      game.new_piece(Pawn, 'black', [1,1])
+      game.new_piece(Pawn, 'black', [1,0])
       game.move('a2','a4');game.move('a7','a6');game.move('a4','a5');game.move('b7','b5')
       piece = game.find_piece([3,0])
       expect(piece.moves).to eql([[2,1]])
@@ -52,8 +52,8 @@ describe Piece do
 
     it "Doesn't always En Passant" do
       game = Game.new()
-      game.add_piece(Pawn.new([6,0], 'white', game),[6,0])
-      game.add_piece(Pawn.new([1,1], 'black', game),[1,1])
+      game.new_piece(Pawn, 'white', [6,0])
+      game.new_piece(Pawn, 'black', [1,1])
       game.move('a2','a4');game.move('b7','b6');game.move('a4','a5');game.move('b6','b5')
       piece = game.find_piece([3,0])
       expect(piece.moves).to eql([[2,0]])
@@ -63,7 +63,7 @@ describe Piece do
   describe Bishop do
     it "Works on Diagonals" do
       game = Game.new()
-      game.add_piece(Bishop.new([4,3], 'white', game), [4,3])
+      game.new_piece(Bishop, 'white', [4,3])
       piece = game.find_piece([4,3])
       expect(piece.moves.sort).to eql([
         [7,0],[6,1],[5,2], # Bottom Left
@@ -75,9 +75,9 @@ describe Piece do
 
     it "Works when blocked by a friendly piece" do
       game = Game.new()
-      game.add_piece(Bishop.new([4,3], 'white', game),[4,3])
+      game.new_piece(Bishop, 'white', [4,3])
       piece = game.find_piece([4,3])
-      game.add_piece(Pawn.new([5,2], 'white', game),[5,2])
+      game.new_piece(Pawn, 'white', [5,2])
 
       expect(piece.moves.sort).to eql([
         [3,4],[2,5],[1,6],[0,7], # Upper Right
@@ -88,9 +88,9 @@ describe Piece do
 
     it "Works when blocked by an enemy piece" do 
       game = Game.new()
-      game.add_piece(Bishop.new([4,3], 'white', game),[4,3])
+      game.new_piece(Bishop, 'white', [4,3])
       piece = game.find_piece([4,3])
-      game.add_piece(Pawn.new([5,2], 'black', game),[5,2])
+      game.new_piece(Pawn, 'black', [5,2])
 
       expect(piece.moves.sort).to eql([
         [5,2], # Enemy Piece
@@ -104,7 +104,7 @@ describe Piece do
   describe Rook do
     it "Works on straight lines" do
       game = Game.new()
-      game.add_piece(Rook.new([4,3], 'black', game), [4,3])
+      game.new_piece(Rook, 'black', [4,3])
       piece = game.find_piece([4,3])
 
       expect(piece.moves().sort).to eql([
@@ -116,8 +116,8 @@ describe Piece do
     end
     it "Works when blocked by friendly" do
       game = Game.new()
-      game.add_piece(Rook.new([4,3], 'black', game), [4,3])
-      game.add_piece(Rook.new([5,3], 'black', game), [5,3])
+      game.new_piece(Rook, 'black', [4,3])
+      game.new_piece(Rook, 'black', [5,3])
       piece = game.find_piece([4,3])
 
       expect(piece.moves().sort).to eql([
@@ -129,8 +129,8 @@ describe Piece do
     end
     it "Works when blocked by enemy" do
       game = Game.new()
-      game.add_piece(Rook.new([4,3], 'black', game), [4,3])
-      game.add_piece(Rook.new([5,3], 'white', game), [5,3])
+      game.new_piece(Rook, 'black', [4,3])
+      game.new_piece(Rook, 'white', [5,3])
       piece = game.find_piece([4,3])
 
       expect(piece.moves().sort).to eql([
@@ -145,7 +145,7 @@ describe Piece do
   describe Knight do
     it "Has all correct moves" do
       game = Game.new()
-      game.add_piece(Knight.new([7,2], 'white', game),[7,2])
+      game.new_piece(Knight, 'white', [7,2])
       piece = game.find_piece([7,2])
 
       expect(piece.moves().sort).to eql([
@@ -155,8 +155,8 @@ describe Piece do
 
     it "Gets blocked by a friendly" do
       game = Game.new()
-      game.add_piece(Knight.new([7,2], 'white', game),[7,2])
-      game.add_piece(Pawn.new([5,3], 'white', game), [5,3])
+      game.new_piece(Knight, 'white', [7,2])
+      game.new_piece(Pawn, 'white', [5,3])
       piece = game.find_piece([7,2])
 
       expect(piece.moves().sort).to eql([
@@ -166,8 +166,8 @@ describe Piece do
 
     it "Doesn't get blocked by an enemy" do
       game = Game.new()
-      game.add_piece(Knight.new([7,2], 'white', game),[7,2])
-      game.add_piece(Pawn.new([5,3], 'black', game), [5,3])
+      game.new_piece(Knight, 'white', [7,2])
+      game.new_piece(Pawn, 'black', [5,3])
       piece = game.find_piece([7,2])
 
       expect(piece.moves().sort).to eql([
@@ -179,7 +179,7 @@ describe Piece do
   describe Queen do
     it "Works on diagonals and straights" do
       game = Game.new()
-      game.add_piece(Queen.new([4,3], 'black', game), [4,3])
+      game.new_piece(Queen, 'black', [4,3])
       piece = game.find_piece([4,3])
 
       expect(piece.moves().sort).to eql([
@@ -196,9 +196,9 @@ describe Piece do
 
     it "Works when blocked by friendlies" do 
       game = Game.new()
-      game.add_piece(Queen.new([4,3], 'black', game), [4,3])
-      game.add_piece(Pawn.new([5,3], 'black', game), [5,3])
-      game.add_piece(Pawn.new([5,2], 'black', game),[5,2])
+      game.new_piece(Queen, 'black', [4,3])
+      game.new_piece(Queen, 'black', [5,3])
+      game.new_piece(Pawn, 'black', [5,2])
       piece = game.find_piece([4,3])
 
       expect(piece.moves().sort).to eql([
@@ -215,9 +215,9 @@ describe Piece do
     
     it "Works when blocked by enemies" do
       game = Game.new()
-      game.add_piece(Queen.new([4,3], 'black', game), [4,3])
-      game.add_piece(Queen.new([5,3], 'black', game), [5,3])
-      game.add_piece(Pawn.new([5,2], 'white', game),[5,2])
+      game.new_piece(Queen, 'black', [4,3])
+      game.new_piece(Queen, 'black', [5,3])
+      game.new_piece(Pawn, 'white', [5,2])
       piece = game.find_piece([4,3])
 
       expect(piece.moves().sort).to eql([
@@ -236,7 +236,7 @@ describe Piece do
   describe King do 
     it "Has all the correct moves" do
       game = Game.new()
-      game.add_piece(King.new([7,4], 'white', game), [7,4])
+      game.new_piece(King, 'white', [7,4])
       game.move('e1','e2')
       piece = game.find_piece([6,4])
 
@@ -249,8 +249,8 @@ describe Piece do
 
     it "Gets blocked by friendlies" do
       game = Game.new()
-      game.add_piece(King.new([7,4], 'white', game), [7,4])
-      game.add_piece(Pawn.new([5,3], 'white', game), [5,3])
+      game.new_piece(King, 'white', [7,4])
+      game.new_piece(Pawn, 'white', [5,3])
       game.move('e1','e2')
       piece = game.find_piece([6,4])
 
@@ -263,8 +263,8 @@ describe Piece do
 
     it "Doesn't get blocked by enemies" do
       game = Game.new()
-      game.add_piece(King.new([7,4], 'white', game), [7,4])
-      game.add_piece(Pawn.new([5,3], 'black', game), [5,3])
+      game.new_piece(King, 'white', [7,4])
+      game.new_piece(Pawn, 'black', [5,3])
       game.move('e1','e2')
       piece = game.find_piece([6,4])
 

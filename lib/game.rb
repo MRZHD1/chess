@@ -5,6 +5,39 @@ class Game
     @rgb = @color == 'white' ? "0;0;153" : "204;0;0"
     8.times {@arr += [Array.new(8, ' ')]}
   end
+  
+  def standard_position
+    8.times do |i|
+      # Adding Pawns
+      self.new_piece(Pawn, 'white', [6,i])
+      self.new_piece(Pawn, 'black', [1,i])
+      # Adding Rooks
+      if i == 0 || i == 7
+        self.new_piece(Rook, 'white', [7, i])
+        self.new_piece(Rook, 'black', [0, i])
+      end
+      # Adding Bishops
+      if i == 1 || i == 6
+        self.new_piece(Bishop, 'white', [7, i])
+        self.new_piece(Bishop, 'black', [0, i])
+      end
+      # Adding Knights
+      if i == 2 || i == 5
+        self.new_piece(Knight, 'white', [7, i])
+        self.new_piece(Knight, 'black', [0, i])
+      end
+      # Adding Queens
+      if i == 3
+        self.new_piece(Queen, 'white', [7, i])
+        self.new_piece(Queen, 'black', [0, i])
+      end
+      # Adding Kings
+      if i == 4
+        self.new_piece(King, 'black', [0, i])
+        self.new_piece(King, 'white', [7,i])
+      end
+    end
+  end
 
   def build_board
     board = ''
@@ -39,11 +72,12 @@ class Game
     end
     @arr[i][j]
   end
-  
-  def add_piece(piece, pos)
+
+  def new_piece(piece, color, pos)
     i,j = pos
-    @arr[i][j] = piece
+    @arr[i][j] = piece.new(pos, color, self)
   end
+
 
   def move(from, to)
     i,j = translate(from)
