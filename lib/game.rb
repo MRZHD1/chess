@@ -2,11 +2,17 @@ class Game
   attr_accessor :arr
   attr_accessor :color
   attr_accessor :kings
+  attr_accessor :passant
+  attr_accessor :half_clock
+  attr_accessor :full_clock
   def initialize
+    @half_clock = 0
+    @full_clock = 1
     @arr = []
     @kings = [[],[]]
     @color = 'white'
     @rgb = @color == 'white' ? "0;0;153" : "204;0;0"
+    @passant = '-'
     8.times {@arr += [Array.new(8, ' ')]}
   end
   
@@ -21,12 +27,12 @@ class Game
         self.new_piece(Rook, 'black', [0, i])
       end
       # Adding Bishops
-      if i == 1 || i == 6
+      if i == 2 || i == 5
         self.new_piece(Bishop, 'white', [7, i])
         self.new_piece(Bishop, 'black', [0, i])
       end
       # Adding Knights
-      if i == 2 || i == 5
+      if i == 1 || i == 6
         self.new_piece(Knight, 'white', [7, i])
         self.new_piece(Knight, 'black', [0, i])
       end
@@ -69,6 +75,12 @@ class Game
     return column == nil ? nil : row, column
   end
 
+  def detranslate(x,y)
+    letter = (('a'..'h').to_a)[y]
+    number = (8-x).to_s
+    return "#{letter}#{number}"
+  end
+
   def find_piece(pos)
     i,j = pos
     if i < 0 || i > 7 || j < 0 || j > 7
@@ -92,6 +104,8 @@ class Game
 
 
   def move(from, to)
+    @passant = '-'
+
     i,j = translate(from)
     x,y = translate(to)
 
@@ -116,15 +130,20 @@ class Game
       return
     end
 
-    # p piece.moves()
+    before = @arr[x][y]
     if piece.moves.include?([x,y])
       if self.test_check?(piece,x,y,i,j)
         puts 'This move would put you into check!'
         piece.update([i,j])
         @arr[i][j] = piece
-        @arr[x][y] = ' '
+        @arr[x][y] = before
         return
       else
+        if @arr[x][y] == ' ' && !(piece.is_a?(Pawn))
+          @half_clock += 1
+        else
+          @half_clock = 0
+        end
         @arr[x][y] = piece
         @arr[i][j] = ' '
         piece.update([x,y])
@@ -133,7 +152,13 @@ class Game
       puts 'Invalid move!'
       return
     end
-    @color = @color == 'white' ? 'black' : 'white'
+
+    if @color == 'black'
+      @full_clock += 1
+      @color = 'white'
+    else
+      @color = 'black'
+    end
   end
 
   def pieces
@@ -162,23 +187,16 @@ class Game
   end
 
   def test_check?(piece,x,y,i,j)
-    temp_game = Game.new()
-    temp_game.arr = @arr.dup
-    temp_piece = piece
-    temp_game.arr[x][y] = temp_piece
-    temp_game.arr[i][j] = ' '
-    temp_piece.update([x,y])
-    temp_game.kings = @kings
-    temp_game.color = @color
-    result = temp_game.check?
-    # Return to default
-    temp_game.arr[i][j] = @arr[i][j]
-    temp_game.arr[x][y] = @arr[x][y]
-    temp_piece.update([i,j])
-    return result
+    @arr[x][y] = piece
+    @arr[i][j] = ' '
+    piece.update([x,y])
+    return self.check?
   end
 
   def check_mate?
+    unless self.check?
+      return false
+    end
     for piece in self.pieces
       if piece.color == @color
         for move in piece.moves
@@ -193,7 +211,7 @@ class Game
     return true
   end
 
-  def castle(king, y)
+  def castle(king, y, check=false)
     if king.column - y > 0 # Long Castle
       conditions = [
         king.castle == true,
@@ -201,9 +219,13 @@ class Game
         self.find_piece([king.row, king.column - 2]) == ' ',
         self.find_piece([king.row, king.column - 3]) == ' ',
         self.find_piece([king.row, king.column - 4]).is_a?(Rook) &&
-        self.find_piece([king.row, king.column - 4]).color == king.color
+        self.find_piece([king.row, king.column - 4]).color == king.color &&
+        self.find_piece([king.row, king.column - 4]).castle == true
       ]
       if conditions.all?
+        if check == true
+          return true
+        end
         rook = self.find_piece([king.row, king.column - 4])
         @arr[rook.row][rook.column] = ' ' 
         rook.update([rook.row, rook.column + 3])
@@ -221,9 +243,13 @@ class Game
         self.find_piece([king.row, king.column + 1]) == ' ',
         self.find_piece([king.row, king.column + 2]) == ' ',
         self.find_piece([king.row, king.column + 3]).is_a?(Rook) &&
-        self.find_piece([king.row, king.column + 3]).color == @color
+        self.find_piece([king.row, king.column + 3]).color == @color &&
+        self.find_piece([king.row, king.column + 3]).castle == true
       ]
       if conditions.all?
+        if check == true
+          return true
+        end
         rook = self.find_piece([king.row, king.column + 3])
         @arr[rook.row][rook.column] = ' ' 
         rook.update([rook.row, rook.column - 2])
@@ -237,5 +263,78 @@ class Game
       end
     end
     return false
+  end
+
+  def castling?
+    result = ''
+    if @kings[0] != [] 
+      # Short castle
+      rook = self.find_piece([7,7])
+      if @kings[0] && rook.is_a?(Rook) && rook.castle == true
+        result += 'K'
+      end
+      # Long Castle
+      rook = self.find_piece([7,0])
+      if @kings[0] && rook.is_a?(Rook) && rook.castle == true
+        result += 'Q'
+      end
+    end
+    if @kings[1] != [] 
+      rook = self.find_piece([0,7])
+      if @kings[0] && rook.is_a?(Rook) && rook.castle == true
+        result += 'k'
+      end
+      rook = self.find_piece([7,7])
+      if @kings[0] && rook.is_a?(Rook) && rook.castle == true
+        result += 'q'
+      end
+    end
+    result
+  end
+  
+  def to_letter(piece)
+    if piece.is_a?(Pawn)
+      return piece.color == 'white' ? 'P' : 'p'
+    elsif piece.is_a?(Knight)
+      return piece.color == 'white' ? 'N' : 'n'
+    elsif piece.is_a?(Bishop)
+      return piece.color == 'white' ? 'B' : 'b'
+    elsif piece.is_a?(Rook)
+      return piece.color == 'white' ? 'R' : 'r'
+    elsif piece.is_a?(Queen)
+      return piece.color == 'white' ? 'Q' : 'q'
+    else
+      return piece.color == 'white' ? 'K' : 'k'
+    end
+  end
+
+  def serialize
+    fen = ''
+    pos = ''
+    for row in @arr
+      i = 0
+      j = 0
+      for piece in row
+        if piece != ' '
+          if i > 0
+            pos += i.to_s
+          end
+          pos += self.to_letter(piece)
+          i = 0
+        else
+          i += 1
+          if j == 7
+            pos += i.to_s
+          end
+        end
+        j += 1
+      end
+      pos += '/'
+    end
+    fen += pos[..-2] + ' '
+    fen += @color == 'white' ? 'w ' : 'b '
+    fen += self.castling? + ' '
+    fen += @passant + ' '
+    fen += "#{@half_clock} #{@full_clock}"
   end
 end

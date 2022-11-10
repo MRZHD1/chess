@@ -174,6 +174,18 @@ describe Piece do
         [5,1],[6,0],[6,4],[5,3]
       ].sort)
     end
+
+    it "Can attack an enemy" do
+      game = Game.new()
+      game.standard_position
+      game.move('e2','e3');game.move('d7','d5');game.move('f1','a6')
+
+      piece = game.find_piece([0,1])
+
+      expect(piece.moves().sort).to eql([
+        [2,0], [2,2], [1,3]
+      ].sort) 
+    end
   end
 
   describe Queen do

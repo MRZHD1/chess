@@ -3,6 +3,7 @@ class Piece
   attr_accessor :color
   attr_accessor :row
   attr_accessor :column
+  attr_accessor :game
   def initialize(position, color, game)
     @row, @column = position
     @color = color
@@ -40,6 +41,14 @@ class Pawn < Piece
   end
 
   def update(position)
+    x,y = position
+    if x-@row = 2
+      if @color == 'black'
+        @@game.passant = @@game.detranslate(x-1, y)
+      else
+        @@game.passant = @@game.detranslate(x+1, y)
+      end
+    end
     super(position)
     if @row == 2 || @row == 5
       @passant = false
@@ -128,6 +137,17 @@ class Pawn < Piece
 end
 
 class Rook < Piece
+  attr_accessor :castle
+  def initialize(position, color, game)
+    super(position, color, game)
+    @castle = true
+  end
+
+  def update(position)
+    super(position)
+    @castle = false
+  end
+
   def to_s
     @color == 'black' ? '♜'.blue : '♜'.red
   end
@@ -268,6 +288,7 @@ class King < Piece
     super(position)
     @castle = false
   end
+
   def to_s
     @color == 'black' ? '♚'.blue : '♚'.red
   end

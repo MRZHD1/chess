@@ -14,21 +14,13 @@ describe Game do
     expect(game.check?).to eql(false)
   end
 
-  it "Properly determines fool's mate" do
+  it "Determines fool's mate" do
     game = Game.new()
     game.standard_position
-    game.move('f2', 'f3');game.move('e7','e6');game.move('g2','g4');game.move('d8','h4')
+    game.move('f2','f3');game.move('e7','e6');game.move('g2','g4');game.move('d8','h4')
     expect(game.check_mate?).to eql(true)
   end
 
-  it "Determines normal check_mate" do
-    game = Game.new()
-    game.standard_position
-    game.move('c1','d3');game.move('a7','a6');game.move('d3','f4');game.move('a6','a5')
-    game.move('f4','e6');game.move('a5','a4');game.move('e6','g7')
-    
-    expect(game.check_mate?).to eql(true)
-  end
   it "Doesn't allow moves that would cause checks" do
     game = Game.new()
     game.new_piece(King, 'white', [6,4])
@@ -61,5 +53,22 @@ describe Game do
 
     game.move('a2','a4');game.move('e8', 'g8')
     expect(game.find_piece([0,6]).is_a?(King) && game.find_piece([0,5]).is_a?(Rook)).to eql(true)
+  end
+
+  it "can serialize standard position" do
+    game = Game.new()
+    game.standard_position
+    game.build_board
+    
+    expect(game.serialize).to eql('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1')
+  end
+
+  it "can serialize after move" do
+    game = Game.new()
+    game.standard_position
+    game.move('e2','e4')
+    game.build_board
+
+    expect(game.serialize).to eql('rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1')
   end
 end
