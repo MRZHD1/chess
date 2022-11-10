@@ -59,6 +59,7 @@ class Pawn < Piece
       return false
     end
   end
+
   def moves
     valid = []
     if @color == 'black' 
@@ -257,6 +258,16 @@ class Queen < Piece
 end
 
 class King < Piece
+  attr_accessor :castle
+  def initialize(position, color, game)
+    super(position, color, game)
+    @castle = true
+  end
+
+  def update(position)
+    super(position)
+    @castle = false
+  end
   def to_s
     @color == 'black' ? '♚'.blue : '♚'.red
   end
@@ -267,28 +278,35 @@ class King < Piece
     unless self.blocked?(1,0)
       valid += [[@row + 1, @column]]
     end
+
     unless self.blocked?(1,1)
       valid += [[@row + 1, @column + 1]]
     end
+
     unless self.blocked?(0,1)
       valid += [[@row, @column + 1]]
     end
+
     unless self.blocked?(-1,0)
       valid += [[@row - 1, @column]]
     end
+
     unless self.blocked?(0,-1)
       valid += [[@row, @column-1]]
     end
+
     unless self.blocked?(-1,-1)
       valid += [[@row - 1, @column - 1]]
     end
+
     unless self.blocked?(1,-1)
       valid += [[@row + 1, @column - 1]]
     end
+
     unless self.blocked?(-1,1)
       valid += [[@row - 1, @column + 1]]
     end
-    
+
     return valid
   end
 end

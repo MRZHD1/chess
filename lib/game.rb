@@ -111,8 +111,13 @@ class Game
       puts 'Wrong colored piece!'
       return
     end
+
+    if piece.is_a?(King) && (j-y).abs == 2 && self.castle(piece, y)
+      return
+    end
+
     # p piece.moves()
-    if piece.moves().include?([x,y])
+    if piece.moves.include?([x,y])
       if self.test_check?(piece,x,y,i,j)
         puts 'This move would put you into check!'
         piece.update([i,j])
@@ -149,7 +154,7 @@ class Game
       return false
     end
     for piece in self.pieces
-      if piece.color != @color && piece.moves.include?([king.row, king.column])
+      if piece.color != @color && piece.moves().include?([king.row, king.column])
         return true
       end
     end
@@ -166,5 +171,51 @@ class Game
     temp_game.kings = @kings
     temp_game.color = @color
     return temp_game.check?
+  end
+
+  def castle(king, y)
+    if king.column - y > 0 # Long Castle
+      conditions = [
+        king.castle == true,
+        self.find_piece([king.row, king.column - 1]) == ' ',
+        self.find_piece([king.row, king.column - 2]) == ' ',
+        self.find_piece([king.row, king.column - 3]) == ' ',
+        self.find_piece([king.row, king.column - 4]).is_a?(Rook) &&
+        self.find_piece([king.row, king.column - 4]).color == king.color
+      ]
+      if conditions.all?
+        rook = self.find_piece([king.row, king.column - 4])
+        @arr[rook.row][rook.column] = ' ' 
+        rook.update([rook.row, rook.column + 3])
+
+        @arr[king.row][king.column] = ' '
+        king.update([king.row, king.column - 2])
+
+        @arr[rook.row][rook.column] = rook
+        @arr[king.row][king.column] = king
+        return true
+      end
+    else # Short castle
+      conditions = [
+        king.castle == true,
+        self.find_piece([king.row, king.column + 1]) == ' ',
+        self.find_piece([king.row, king.column + 2]) == ' ',
+        self.find_piece([king.row, king.column + 3]).is_a?(Rook) &&
+        self.find_piece([king.row, king.column + 3]).color == @color
+      ]
+      if conditions.all?
+        rook = self.find_piece([king.row, king.column + 3])
+        @arr[rook.row][rook.column] = ' ' 
+        rook.update([rook.row, rook.column - 2])
+
+        @arr[king.row][king.column] = ' '
+        king.update([king.row, king.column + 2])
+
+        @arr[rook.row][rook.column] = rook
+        @arr[king.row][king.column] = king
+        return true
+      end
+    end
+    return false
   end
 end
