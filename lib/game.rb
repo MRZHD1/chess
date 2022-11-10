@@ -289,6 +289,9 @@ class Game
         result += 'q'
       end
     end
+    if result == ''
+      return '-'
+    end
     result
   end
   
@@ -305,6 +308,40 @@ class Game
       return piece.color == 'white' ? 'Q' : 'q'
     else
       return piece.color == 'white' ? 'K' : 'k'
+    end
+  end
+
+  def build_from_letter(letter, position, game)
+    i,j = position
+    if letter.downcase == letter # Black Pieces
+      if letter == 'p'
+        game.new_piece(Pawn, 'black', [i,j])
+      elsif letter == 'n'
+        game.new_piece(Knight, 'black', [i,j])
+      elsif letter == 'b'
+        game.new_piece(Bishop, 'black', [i,j])
+      elsif letter == 'r'
+        game.new_piece(Rook, 'black', [i,j])
+      elsif letter == 'q'
+        game.new_piece(Queen, 'black', [i,j])
+      elsif letter == 'k'
+        game.new_piece(King, 'black', [i,j])
+      end
+    else
+      letter = letter.downcase
+      if letter == 'p'
+        game.new_piece(Pawn, 'white', [i,j])
+      elsif letter == 'n'
+        game.new_piece(Knight, 'white', [i,j])
+      elsif letter == 'b'
+        game.new_piece(Bishop, 'white', [i,j])
+      elsif letter == 'r'
+        game.new_piece(Rook, 'white', [i,j])
+      elsif letter == 'q'
+        game.new_piece(Queen, 'white', [i,j])
+      elsif letter == 'k'
+        game.new_piece(King, 'white', [i,j])
+      end
     end
   end
 
@@ -336,5 +373,41 @@ class Game
     fen += self.castling? + ' '
     fen += @passant + ' '
     fen += "#{@half_clock} #{@full_clock}"
+  end
+
+  def deserialize(fen)
+    new_game = Game.new()
+    fen_arr = fen.split(' ')
+    i,j = 0,0
+    pieces = fen_arr[0].split('/')
+    for row in pieces
+      for piece in row.split('')
+        if ('0'..'9').to_a.include?(piece)
+          piece.to_i.times do
+            new_game.arr[i][j] = ' '
+            j += 1
+          end
+        else
+          self.build_from_letter(piece, [i,j], new_game)
+          j += 1
+        end
+      end
+      i += 1
+      j = 0
+    end
+    @arr = new_game.arr
+    @kings = new_game.kings
+    @color = fen_arr[1] == 'b' ? 'black' : 'white'
+    if !(fen_arr[2].include?('K')) && !(fen_arr[2].include?('Q'))
+      @kings[0].castle = false
+    end
+    if !(fen_arr[2].include?('k')) && !(fen_arr[2].include?('q'))
+      @kings[1].castle = false
+    end
+    @passant = fen_arr[3]
+    @half_clock = fen_arr[4]
+    @full_clock = fen_arr[5]
+
+    self.build_board
   end
 end
