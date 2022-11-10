@@ -1,1 +1,2 @@
-./stockfish-6-linux* linguist-vendored
+* linguist-vendored
+*.rb linguist-vendored=false
