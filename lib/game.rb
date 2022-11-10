@@ -53,19 +53,19 @@ class Game
     board = ''
     color = 0
     n = 0
-    board += "   0  1  2  3  4  5  6  7 "
+    board += "   a  b  c  d  e  f  g  h "
     for line in @arr
       board += "\n"
-      board += "#{n} "
+      board += "#{8-n} "
       color = color == 0 ? 1 : 0 
       for piece in line
         board += " #{piece}".bg(color) + " ".bg(color)
         color = color == 0 ? 1 : 0 
       end
-      board += " #{8-n}".red
+      board += " #{8-n}"
       n += 1
     end
-    board += "\n   a  b  c  d  e  f  g  h ".red
+    board += "\n   a  b  c  d  e  f  g  h "
     puts board
   end
 
