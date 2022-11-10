@@ -3,8 +3,9 @@ require_relative 'pieces'
 require_relative 'game'
 
 game = Game.new()
-game.standard_position
-game.build_board
+# game.new_piece(King, 'white', [7,4])
+# game.new_piece(Pawn, 'white', [6,5])
+# game.new_piece(Queen, 'black', [5,6])
 
 # loop do
 #   game.build_board

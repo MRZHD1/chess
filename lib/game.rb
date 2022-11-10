@@ -1,4 +1,7 @@
 class Game
+  attr_accessor :arr
+  attr_accessor :color
+  attr_accessor :kings
   def initialize
     @arr = []
     @kings = [[],[]]
@@ -84,6 +87,7 @@ class Game
         @kings[1] = @arr[i][j]
       end
     end
+    return @arr[i][j]
   end
 
 
@@ -108,10 +112,18 @@ class Game
       return
     end
     # p piece.moves()
-    if piece.moves().include?([x,y])    
-      @arr[x][y] = piece
-      @arr[i][j] = ' '
-      piece.update([x,y])
+    if piece.moves().include?([x,y])
+      if self.test_check?(piece,x,y,i,j)
+        puts 'This move would put you into check!'
+        piece.update([i,j])
+        @arr[i][j] = piece
+        @arr[x][y] = ' '
+        return
+      else
+        @arr[x][y] = piece
+        @arr[i][j] = ' '
+        piece.update([x,y])
+      end
     else
       puts 'Invalid move!'
       return
@@ -131,13 +143,28 @@ class Game
     return pieces
   end
 
-  def check
+  def check?
     king = @color == 'white' ? @kings[0] : @kings[1]
+    if king == []
+      return false
+    end
     for piece in self.pieces
       if piece.color != @color && piece.moves.include?([king.row, king.column])
         return true
       end
     end
     return false
+  end
+
+  def test_check?(piece,x,y,i,j)
+    temp_game = Game.new()
+    temp_game.arr = @arr
+    temp_piece = piece
+    temp_game.arr[x][y] = temp_piece
+    temp_game.arr[i][j] = ' '
+    temp_piece.update([x,y])
+    temp_game.kings = @kings
+    temp_game.color = @color
+    return temp_game.check?
   end
 end

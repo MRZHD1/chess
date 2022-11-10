@@ -264,7 +264,7 @@ describe Piece do
     it "Doesn't get blocked by enemies" do
       game = Game.new()
       game.new_piece(King, 'white', [7,4])
-      game.new_piece(Pawn, 'black', [5,3])
+      game.new_piece(Pawn, 'black', [6,3])
       game.move('e1','e2')
       piece = game.find_piece([6,4])
 
