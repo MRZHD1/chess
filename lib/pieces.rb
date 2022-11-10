@@ -22,7 +22,7 @@ class Piece
     elsif @@game.find_piece([@row + x, @column + y]).to_s.include?(@rgb)
       return true
     elsif @@game.find_piece([@row + x, @column + y]) != ' '
-      unless self.is_a?(Knight) || self.is_a?(King)
+      if !(self.is_a?(Knight)) && !(self.is_a?(King))
         @enemy = true
       end
       return false

@@ -14,6 +14,21 @@ describe Game do
     expect(game.check?).to eql(false)
   end
 
+  it "Properly determines fool's mate" do
+    game = Game.new()
+    game.standard_position
+    game.move('f2', 'f3');game.move('e7','e6');game.move('g2','g4');game.move('d8','h4')
+    expect(game.check_mate?).to eql(true)
+  end
+
+  it "Determines normal check_mate" do
+    game = Game.new()
+    game.standard_position
+    game.move('c1','d3');game.move('a7','a6');game.move('d3','f4');game.move('a6','a5')
+    game.move('f4','e6');game.move('a5','a4');game.move('e6','g7')
+    
+    expect(game.check_mate?).to eql(true)
+  end
   it "Doesn't allow moves that would cause checks" do
     game = Game.new()
     game.new_piece(King, 'white', [6,4])
@@ -45,8 +60,6 @@ describe Game do
     game.new_piece(Rook, 'black', [0,7])
 
     game.move('a2','a4');game.move('e8', 'g8')
-    game.build_board
-
     expect(game.find_piece([0,6]).is_a?(King) && game.find_piece([0,5]).is_a?(Rook)).to eql(true)
   end
 end

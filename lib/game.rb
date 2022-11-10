@@ -56,10 +56,10 @@ class Game
         board += " #{piece}".bg(color) + " ".bg(color)
         color = color == 0 ? 1 : 0 
       end
-      board += " #{n}"
+      board += " #{8-n}".red
       n += 1
     end
-    board += "\n   0  1  2  3  4  5  6  7 "
+    board += "\n   a  b  c  d  e  f  g  h ".red
     puts board
   end
 
@@ -112,7 +112,7 @@ class Game
       return
     end
 
-    if piece.is_a?(King) && (j-y).abs == 2 && self.castle(piece, y)
+    if piece.is_a?(King) && !(self.check?) && (j-y).abs == 2 && self.castle(piece, y)
       return
     end
 
@@ -163,14 +163,34 @@ class Game
 
   def test_check?(piece,x,y,i,j)
     temp_game = Game.new()
-    temp_game.arr = @arr
+    temp_game.arr = @arr.dup
     temp_piece = piece
     temp_game.arr[x][y] = temp_piece
     temp_game.arr[i][j] = ' '
     temp_piece.update([x,y])
     temp_game.kings = @kings
     temp_game.color = @color
-    return temp_game.check?
+    result = temp_game.check?
+    # Return to default
+    temp_game.arr[i][j] = @arr[i][j]
+    temp_game.arr[x][y] = @arr[x][y]
+    temp_piece.update([i,j])
+    return result
+  end
+
+  def check_mate?
+    for piece in self.pieces
+      if piece.color == @color
+        for move in piece.moves
+          x,y = piece.row, piece.column
+          i,j = move
+          unless self.test_check?(piece,x,y,i,j)
+            return false
+          end
+        end
+      end
+    end
+    return true
   end
 
   def castle(king, y)
