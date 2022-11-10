@@ -56,7 +56,7 @@ class Pawn < Piece
   end
 
   def to_s
-    @color == 'black' ? '♟'.blue : '♟'.red
+    @color == 'black' ? '♙'.blue : '♙'.red
   end
 
   def blocked?(x)
