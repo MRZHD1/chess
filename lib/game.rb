@@ -53,6 +53,8 @@ class Game
     board = ''
     color = 0
     n = 0
+    board += "Type in the square you want to move from, then the square you want to move to\n"
+    board += "Example: 'e2e4'. You can also type in 'save' to save your game. \n"
     board += "   a  b  c  d  e  f  g  h "
     for line in @arr
       board += "\n"
