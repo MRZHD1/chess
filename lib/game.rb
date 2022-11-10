@@ -187,10 +187,17 @@ class Game
   end
 
   def test_check?(piece,x,y,i,j)
+    piece.update([i,j])
+    before = @arr[x][y]
     @arr[x][y] = piece
     @arr[i][j] = ' '
     piece.update([x,y])
-    return self.check?
+    value = self.check?.to_s
+    
+    @arr[x][y] = before
+    @arr[i][j] = piece
+    piece.update([i,j])
+    return value == 'true'
   end
 
   def check_mate?
@@ -293,121 +300,5 @@ class Game
       return '-'
     end
     result
-  end
-  
-  def to_letter(piece)
-    if piece.is_a?(Pawn)
-      return piece.color == 'white' ? 'P' : 'p'
-    elsif piece.is_a?(Knight)
-      return piece.color == 'white' ? 'N' : 'n'
-    elsif piece.is_a?(Bishop)
-      return piece.color == 'white' ? 'B' : 'b'
-    elsif piece.is_a?(Rook)
-      return piece.color == 'white' ? 'R' : 'r'
-    elsif piece.is_a?(Queen)
-      return piece.color == 'white' ? 'Q' : 'q'
-    else
-      return piece.color == 'white' ? 'K' : 'k'
-    end
-  end
-
-  def build_from_letter(letter, position, game)
-    i,j = position
-    if letter.downcase == letter # Black Pieces
-      if letter == 'p'
-        game.new_piece(Pawn, 'black', [i,j])
-      elsif letter == 'n'
-        game.new_piece(Knight, 'black', [i,j])
-      elsif letter == 'b'
-        game.new_piece(Bishop, 'black', [i,j])
-      elsif letter == 'r'
-        game.new_piece(Rook, 'black', [i,j])
-      elsif letter == 'q'
-        game.new_piece(Queen, 'black', [i,j])
-      elsif letter == 'k'
-        game.new_piece(King, 'black', [i,j])
-      end
-    else
-      letter = letter.downcase
-      if letter == 'p'
-        game.new_piece(Pawn, 'white', [i,j])
-      elsif letter == 'n'
-        game.new_piece(Knight, 'white', [i,j])
-      elsif letter == 'b'
-        game.new_piece(Bishop, 'white', [i,j])
-      elsif letter == 'r'
-        game.new_piece(Rook, 'white', [i,j])
-      elsif letter == 'q'
-        game.new_piece(Queen, 'white', [i,j])
-      elsif letter == 'k'
-        game.new_piece(King, 'white', [i,j])
-      end
-    end
-  end
-
-  def serialize
-    fen = ''
-    pos = ''
-    for row in @arr
-      i = 0
-      j = 0
-      for piece in row
-        if piece != ' '
-          if i > 0
-            pos += i.to_s
-          end
-          pos += self.to_letter(piece)
-          i = 0
-        else
-          i += 1
-          if j == 7
-            pos += i.to_s
-          end
-        end
-        j += 1
-      end
-      pos += '/'
-    end
-    fen += pos[..-2] + ' '
-    fen += @color == 'white' ? 'w ' : 'b '
-    fen += self.castling? + ' '
-    fen += @passant + ' '
-    fen += "#{@half_clock} #{@full_clock}"
-  end
-
-  def deserialize(fen)
-    new_game = Game.new()
-    fen_arr = fen.split(' ')
-    i,j = 0,0
-    pieces = fen_arr[0].split('/')
-    for row in pieces
-      for piece in row.split('')
-        if ('0'..'9').to_a.include?(piece)
-          piece.to_i.times do
-            new_game.arr[i][j] = ' '
-            j += 1
-          end
-        else
-          self.build_from_letter(piece, [i,j], new_game)
-          j += 1
-        end
-      end
-      i += 1
-      j = 0
-    end
-    @arr = new_game.arr
-    @kings = new_game.kings
-    @color = fen_arr[1] == 'b' ? 'black' : 'white'
-    if !(fen_arr[2].include?('K')) && !(fen_arr[2].include?('Q'))
-      @kings[0].castle = false
-    end
-    if !(fen_arr[2].include?('k')) && !(fen_arr[2].include?('q'))
-      @kings[1].castle = false
-    end
-    @passant = fen_arr[3]
-    @half_clock = fen_arr[4]
-    @full_clock = fen_arr[5]
-
-    self.build_board
   end
 end

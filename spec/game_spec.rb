@@ -54,21 +54,4 @@ describe Game do
     game.move('a2','a4');game.move('e8', 'g8')
     expect(game.find_piece([0,6]).is_a?(King) && game.find_piece([0,5]).is_a?(Rook)).to eql(true)
   end
-
-  it "can serialize standard position" do
-    game = Game.new()
-    game.standard_position
-    game.build_board
-    
-    expect(game.serialize).to eql('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1')
-  end
-
-  it "can serialize after move" do
-    game = Game.new()
-    game.standard_position
-    game.move('e2','e4')
-    game.build_board
-
-    expect(game.serialize).to eql('rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1')
-  end
 end
