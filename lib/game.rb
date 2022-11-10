@@ -1,6 +1,7 @@
 class Game
   def initialize
     @arr = []
+    @kings = [[],[]]
     @color = 'white'
     @rgb = @color == 'white' ? "0;0;153" : "204;0;0"
     8.times {@arr += [Array.new(8, ' ')]}
@@ -76,6 +77,13 @@ class Game
   def new_piece(piece, color, pos)
     i,j = pos
     @arr[i][j] = piece.new(pos, color, self)
+    if @arr[i][j].is_a?(King)
+      if color == 'white'
+        @kings[0] = @arr[i][j]
+      else
+        @kings[1] = @arr[i][j]
+      end
+    end
   end
 
 
@@ -109,5 +117,27 @@ class Game
       return
     end
     @color = @color == 'white' ? 'black' : 'white'
+  end
+
+  def pieces
+    pieces = []
+    for row in @arr
+      for piece in row
+        if piece != ' '
+          pieces += [piece]
+        end
+      end
+    end
+    return pieces
+  end
+
+  def check
+    king = @color == 'white' ? @kings[0] : @kings[1]
+    for piece in self.pieces
+      if piece.color != @color && piece.moves.include?([king.row, king.column])
+        return true
+      end
+    end
+    return false
   end
 end

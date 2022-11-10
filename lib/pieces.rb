@@ -1,6 +1,8 @@
 require './lib/colors.rb'
 class Piece
   attr_accessor :color
+  attr_accessor :row
+  attr_accessor :column
   def initialize(position, color, game)
     @row, @column = position
     @color = color
