@@ -1,6 +1,6 @@
 class String
   def bg(arg)
-    return arg == 0 ? "\e[48;2;#{255};#{255};#{153}m#{self}\e[0m" : "\e[48;2;#{255};#{203};#{112}m#{self}\e[0m"
+    return arg == 1 ? "\e[48;2;#{255};#{255};#{153}m#{self}\e[0m" : "\e[48;2;#{255};#{203};#{112}m#{self}\e[0m"
   end
 
   def blue
