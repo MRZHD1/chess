@@ -5,10 +5,12 @@ This is a Ruby Chess game built to be played from the CLI. It comes with the sto
 
 This game comes with your standard suite of chess rules, such as en passant, castling, and can figure out checks and checkmates. It only allows legal chess moves and you have the ability to fight Stockfish 6.
 
+## Demo
+
+![demo](https://i.imgur.com/QOpwYeS.gif)
 
 
-
-## Executing the files
+## Running the game
 
 This game is has a live preview on repl.it! Check it [here](https://replit.com/@MRZHD1/chess?v=1).
 
@@ -37,7 +39,3 @@ Once you run main.rb, you will be prompted to either start a new game or load a 
 After that, you'll be prompted to either start a 2-player game, or fight against Stockfish. If you want to fight Stockfish, type `1`. Otherwise click `Enter`.
 
 The rest is simple, type in the square you're moving from,  and the square you're moving to, in one line with no spaces or capitals. Type in 'save' at anytime to save the game, and 'quit' at anytime to stop the game.
-## Demo
-
-![demo](https://i.imgur.com/QOpwYeS.gif)
-
