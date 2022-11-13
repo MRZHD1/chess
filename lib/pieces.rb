@@ -93,11 +93,11 @@ class Pawn < Piece
       # En Passant
       if @row == 4
         piece = @@game.find_piece([@row, @column - 1])
-        if piece != " " && piece.color != @color && piece.passant == true
+        if piece != " " && piece.color != @color && piece.is_a(Pawn) && piece.passant == true
           valid += [[@row + 1, @column - 1]]
         end
         piece = @@game.find_piece([@row, @column + 1])
-        if piece != " " && piece.color != @color && piece.passant == true
+        if piece != " " && piece.color != @color && piece.is_a(Pawn) && piece.passant == true
           valid += [[@row + 1, @column + 1]]
         end
       end
@@ -123,11 +123,11 @@ class Pawn < Piece
       # En Passant
       if @row == 3
         piece = @@game.find_piece([@row, @column - 1])
-        if piece != ' ' && piece.color != @color && piece.passant == true
+        if piece != ' ' && piece.color != @color && piece.is_a(Pawn) && piece.passant == true
           valid += [[@row - 1, @column - 1]]
         end
         piece = @@game.find_piece([@row, @column + 1])
-        if piece != ' ' && piece.color != @color && piece.passant == true
+        if piece != ' ' && piece.color != @color && piece.is_a(Pawn) && piece.passant == true
           valid += [[@row - 1, @column + 1]]
         end
       end
